@@ -10,6 +10,8 @@ It supports:
 - text balancing
 - emoji
 
+[Demo](https://activetheory.github.io/split-text/)
+
 ## Installation
 
 ```bash
