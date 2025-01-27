@@ -86,7 +86,7 @@ export default class SplitText {
           element.style.removeProperty('width');
           this.attachBr(element, this.words);
           this.splitBr(element);
-          this.replaceWords(element);
+          this.replaceWords(element, (byLines || byWords) && !byChars);
           this.lines.push(...this.splitLines(element));
           const earlyReturn = this.checkBalance(element, i);
           if (!earlyReturn) return;
@@ -266,9 +266,12 @@ export default class SplitText {
     return found;
   }
 
-  replaceWords(element) {
+  replaceWords(element, notByChars) {
     Array.from(element.getElementsByClassName('word')).forEach((el, i) => {
       el.replaceWith(this.words[i]);
+      if (el.__isCJK && notByChars) {
+        this.words[i].innerHTML = this.words[i].textContent;
+      }
     });
   }
 
@@ -325,6 +328,7 @@ export default class SplitText {
 
                 // If it's CJK, split into individual characters
                 if (isCJKMode) {
+                  splitEl.__isCJK = true;
                   this.chars.push(...this.splitElement(splitEl, 'char', '', false));
                 }
               }
