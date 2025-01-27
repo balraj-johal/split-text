@@ -5,7 +5,7 @@ GSAP-like text splitting class.
 It supports:
 
 - splitting text into lines, words, and chars
-- CJK locales
+- CJT locales
 - nested HTML elements (with all the types of splits 😉)
 - text balancing
 - emoji
@@ -37,7 +37,7 @@ const splitTextInstance = new SplitText(el);
 - `noAriaLabel`: Whether to not add .sr-only content. Defaults to `false`.
 - `noBalance`: Whether to not balance the text using @activetheory/balance-text. Defaults to `false`.
 - `balanceRatio`: The ratio of the width of the element to the width of the parent. Defaults to `1`.
-- `handleCJK`: Whether to handle CJK characters. Defaults to `false`.
+- `handleCJT`: Whether to handle CJT characters. Defaults to `false`.
 
 ## Properties
 
@@ -59,7 +59,7 @@ To run the demo, run `npm run dev`.
 
 ## Notes
 
-### CJK locales
+### CJT locales
 
-The `handleCJK` option will leverage `&ZeroWidthSpace;` to split the text properly.
+The `handleCJT` option will leverage `&ZeroWidthSpace;` to split the text properly.
 We suggest to have a look at https://github.com/google/budoux/ for more information about how to place `&ZeroWidthSpace;` in your text.

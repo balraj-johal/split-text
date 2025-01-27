@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const typeChars = document.getElementById('input-type-chars');
   const noAriaLabel = document.getElementById('input-no-aria-label');
   const noBalance = document.getElementById('input-no-balance');
-  const handleCJK = document.getElementById('input-handle-cjk');
+  const handleCJT = document.getElementById('input-handle-cjt');
   const cssBalance = document.getElementById('input-balance');
   // Get font size input
   const fontSize = document.getElementById('input-font-size');
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       type: types.join(','),
       noAriaLabel: noAriaLabel.checked,
       noBalance: noBalance.checked,
-      handleCJK: handleCJK.checked,
+      handleCJT: handleCJT.checked,
     };
   };
 
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners
   inputText.addEventListener('input', updateSplit);
   fontSize.addEventListener('input', updateFontSize);
-  [typeLines, typeWords, typeChars, noAriaLabel, noBalance, handleCJK, cssBalance].forEach((checkbox) => {
+  [typeLines, typeWords, typeChars, noAriaLabel, noBalance, handleCJT, cssBalance].forEach((checkbox) => {
     checkbox.addEventListener('change', updateSplit);
   });
 

@@ -37,7 +37,7 @@ export default class SplitText {
       noBalance: false,
       balanceRatio: 1,
       minLines: 1,
-      handleCJK: false,
+      handleCJT: false,
     }
   ) {
     this.elements = toArray(element);
@@ -47,7 +47,7 @@ export default class SplitText {
     this.options.noAriaLabel = typeof this.options.noAriaLabel === 'boolean' ? this.options.noAriaLabel : false;
     this.options.noBalance = typeof this.options.noBalance === 'boolean' ? this.options.noBalance : false;
     this.options.minLines = typeof this.options.minLines === 'number' ? this.options.minLines : 1;
-    this.options.handleCJK = typeof this.options.handleCJK === 'boolean' ? this.options.handleCJK : false;
+    this.options.handleCJT = typeof this.options.handleCJT === 'boolean' ? this.options.handleCJT : false;
     this.options.type = typeof this.options.type === 'string' ? this.options.type : 'lines';
     this.split();
   }
@@ -269,14 +269,14 @@ export default class SplitText {
   replaceWords(element, notByChars) {
     Array.from(element.getElementsByClassName('word')).forEach((el, i) => {
       el.replaceWith(this.words[i]);
-      if (el.__isCJK && notByChars) {
+      if (el.__isCJT && notByChars) {
         this.words[i].innerHTML = this.words[i].textContent;
       }
     });
   }
 
-  // CJK locales + Thai
-  isCJKChar(char) {
+  // CJT locales + Thai
+  isCJTChar(char) {
     return /[\u4E00-\u9FFF\u3400-\u4DBF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF\u0E00-\u0E7F]/.test(char);
   }
 
@@ -292,7 +292,7 @@ export default class SplitText {
         allElements.push(document.createTextNode(wholeText[0]));
       }
 
-      if (this.options.handleCJK && key === 'word') {
+      if (this.options.handleCJT && key === 'word') {
         // Split text into words first
         const words = contents.split(/(\s+)/).filter(Boolean);
 
@@ -307,14 +307,14 @@ export default class SplitText {
 
           // Process each character in the word
           let currentWord = '';
-          let isCJKMode = false;
+          let isCJTMode = false;
 
           for (let j = 0; j < word.length; j++) {
             const char = word[j];
-            const isCurrentCharCJK = this.isCJKChar(char);
+            const isCurrentCharCJT = this.isCJTChar(char);
 
             // Mode switch or end of word
-            if (isCurrentCharCJK !== isCJKMode || j === word.length - 1) {
+            if (isCurrentCharCJT !== isCJTMode || j === word.length - 1) {
               // Add the current character to the word
               if (j === word.length - 1) {
                 currentWord += char;
@@ -326,23 +326,23 @@ export default class SplitText {
                 elements.push(splitEl);
                 allElements.push(splitEl);
 
-                // If it's CJK, split into individual characters
-                if (isCJKMode) {
-                  splitEl.__isCJK = true;
+                // If it's CJT, split into individual characters
+                if (isCJTMode) {
+                  splitEl.__isCJT = true;
                   this.chars.push(...this.splitElement(splitEl, 'char', '', false));
                 }
               }
 
               // Reset for next segment
               currentWord = j === word.length - 1 ? '' : char;
-              isCJKMode = isCurrentCharCJK;
+              isCJTMode = isCurrentCharCJT;
             } else {
               currentWord += char;
             }
           }
         }
       } else {
-        // Regular handling for non-CJK text or when handleCJK is false
+        // Regular handling for non-CJT text or when handleCJT is false
         if (key === 'char') {
           // Use Array.from to properly split Unicode characters including emojis
           const chars = Array.from(contents);

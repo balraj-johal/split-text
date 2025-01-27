@@ -5,7 +5,7 @@ export type SplitTextOptions = {
   noAriaLabel?: boolean;
   noBalance?: boolean;
   balanceRatio?: number;
-  handleCJK?: boolean;
+  handleCJT?: boolean;
 };
 
 export default class SplitText {
