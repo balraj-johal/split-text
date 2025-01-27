@@ -101,6 +101,15 @@ export default class SplitText {
       if (!this.options.noAriaLabel) {
         const span = document.createElement('span');
         span.classList.add('sr-only');
+        span.style.setProperty('position', 'absolute');
+        span.style.setProperty('width', '1px');
+        span.style.setProperty('height', '1px');
+        span.style.setProperty('padding', '0');
+        span.style.setProperty('margin', '-1px');
+        span.style.setProperty('overflow', 'hidden');
+        span.style.setProperty('clip', 'rect(0, 0, 0, 0)');
+        span.style.setProperty('white-space', 'nowrap');
+        span.style.setProperty('border', '0');
         span.textContent = this.ariaLabel.join(' ');
         element.appendChild(span);
       }
