@@ -1,0 +1,75 @@
+{
+  "name": "@activetheory/split-text",
+  "version": "0.0.0",
+  "description": "GSAP-like text splitting class",
+  "main": "./src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "dev": "vite demo",
+    "format": "prettier --write --ignore-unknown",
+    "eslint": "eslint --fix src",
+    "release": "release-it",
+    "prepare": "husky"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "author": {
+    "name": "Active Theory",
+    "email": "hello@activetheory.net",
+    "url": "https://activetheory.net"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/activetheory/split-text.git"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "css",
+    "printWidth": 200,
+    "quoteProps": "as-needed",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "prettier": "^3.4.2",
+    "release-it": "^18.1.1",
+    "vite": "^6.0.9"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": true
+    }
+  },
+  "lint-staged": {
+    "**/*": [
+      "npm run eslint",
+      "npm run format"
+    ]
+  },
+  "dependencies": {
+    "@activetheory/balance-text": "^1.0.1"
+  }
+}

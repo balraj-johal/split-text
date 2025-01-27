@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>Split Text</h1>
+      <div>
+        <div class="col">
+          <textarea id="input-text" rows="10" placeholder="Enter text to split"></textarea>
+          <fieldset>
+            <legend>Options</legend>
+            <div>
+              <input type="checkbox" id="input-type-lines" checked />
+              <label for="input-type-lines">Lines</label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-type-words" />
+              <label for="input-type-words">Words</label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-type-chars" />
+              <label for="input-type-chars">Chars</label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-no-aria-label" />
+              <label for="input-no-aria-label">No aria-label</label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-no-balance" />
+              <label for="input-no-balance">No balance<br /><small>turn of the balance-text library</small></label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-handle-cjk" />
+              <label for="input-handle-cjk">Handle CJK</label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Styles</legend>
+            <div>
+              <input type="range" id="input-font-size" min="10" max="100" value="16" />
+              <label for="input-font-size">Font size</label>
+            </div>
+            <div>
+              <input type="checkbox" id="input-balance" value="balance" checked />
+              <label for="input-balance">text-wrap: balance<br /><small>preferred way on modern browsers</small></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="col">
+          <div class="output-container">
+            <div id="output-text"></div>
+          </div>
+          <button id="output-revert">Revert</button>
+          <div id="original-text"></div>
+        </div>
+      </div>
+    </main>
+    <script src="./index.js" type="module"></script>
+  </body>
+</html>
