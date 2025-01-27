@@ -349,30 +349,40 @@ export default class SplitText {
         }
       } else {
         // Regular handling for non-CJK text or when handleCJK is false
-        const words = contents.split(splitOn);
-        let i = 0,
-          splitText;
+        if (key === 'char') {
+          // Use Array.from to properly split Unicode characters including emojis
+          const chars = Array.from(contents);
+          chars.forEach((char) => {
+            const splitEl = this.createElement(parentEl, key, char);
+            elements.push(splitEl);
+            allElements.push(splitEl);
+          });
+        } else {
+          const words = contents.split(splitOn);
+          let i = 0,
+            splitText;
 
-        const recursiveSupportNBSpaces = () => {
-          if (key === 'char') return;
-          let matched = false;
-          const charAt = contents.charAt(contents.indexOf(splitText) + splitText.length);
-          const space = NBSPACES.find((s) => s === charAt);
-          if (space) {
-            splitText = splitText.concat(space).concat(words[++i]);
-            matched = true;
+          const recursiveSupportNBSpaces = () => {
+            if (key === 'char') return;
+            let matched = false;
+            const charAt = contents.charAt(contents.indexOf(splitText) + splitText.length);
+            const space = NBSPACES.find((s) => s === charAt);
+            if (space) {
+              splitText = splitText.concat(space).concat(words[++i]);
+              matched = true;
+            }
+            contents = contents.substring(contents.indexOf(splitText));
+            if (matched) return recursiveSupportNBSpaces();
+          };
+
+          for (; i < words.length; i++) {
+            splitText = words[i];
+            if (i && preserveWhitespace) allElements.push(document.createTextNode(' '));
+            recursiveSupportNBSpaces();
+            const splitEl = this.createElement(parentEl, key, splitText);
+            elements.push(splitEl);
+            allElements.push(splitEl);
           }
-          contents = contents.substring(contents.indexOf(splitText));
-          if (matched) return recursiveSupportNBSpaces();
-        };
-
-        for (; i < words.length; i++) {
-          splitText = words[i];
-          if (i && preserveWhitespace) allElements.push(document.createTextNode(' '));
-          recursiveSupportNBSpaces();
-          const splitEl = this.createElement(parentEl, key, splitText);
-          elements.push(splitEl);
-          allElements.push(splitEl);
         }
       }
 
