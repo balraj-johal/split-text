@@ -86,7 +86,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initial text
-  inputText.value = [/*html*/ `<h1>split anything 🐳 🍔 🍕 into words, chars, lines</h1>`, /*html*/ `<p>Try typing some text here to see it split into lines, words, and characters!</p>`].join('\n');
+  inputText.value = [
+    /*html*/ `<h1>split anything 🐳 🍔 🍕 into words, chars, lines</h1>`,
+    /*html*/ `<p>Try typing some text here to see it split into lines, words, and characters!</p>`,
+    /*html*/ `<ul>`,
+    /*html*/ `  <li>pizza <b>margherita</b></li>`,
+    /*html*/ `  <li>hamburger</li>`,
+    /*html*/ `  <li>taco</li>`,
+    /*html*/ `</ul>`,
+  ].join('\n');
 
   updateSplit();
 });

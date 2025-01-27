@@ -1,11 +1,13 @@
 # Split Text
 
 Features:
+
 - splitting text into lines, words, and chars
-- support for Chinese, Japanese, Thai, Korean, etc
+- support for CJT languages (Traditional/Simplified Chinese, Japanese, Korean, etc)
 - nested HTML elements (with all the types of splits)
 - text balancing
-- emoji
+- accessibility
+- emoji support
 
 [Demo](https://activetheory.github.io/split-text/)
 
