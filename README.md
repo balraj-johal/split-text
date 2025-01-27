@@ -1,12 +1,9 @@
 # Split Text
 
-GSAP-like text splitting class.
-
-It supports:
-
+Features:
 - splitting text into lines, words, and chars
-- CJT locales
-- nested HTML elements (with all the types of splits 😉)
+- support for Chinese, Japanese, Thai, Korean, etc
+- nested HTML elements (with all the types of splits)
 - text balancing
 - emoji
 
