@@ -80,14 +80,13 @@ export default class SplitText {
         }
 
         if (byLines) {
-          const elements = this.options.handleCJK ? this.chars : this.words;
-          this.detectLinesTop(element, elements, this.options.lineThreshold);
-          const proceed = this.checkMinLines(element, elements);
+          this.detectLinesTop(element, this.words, this.options.lineThreshold);
+          const proceed = this.checkMinLines(element, this.words);
           if (!proceed) return;
           element.style.removeProperty('width');
-          this.attachBr(element, elements);
+          this.attachBr(element, this.words);
           this.splitBr(element);
-          this.replaceWords(element, this.options.handleCJK);
+          this.replaceWords(element);
           this.lines.push(...this.splitLines(element));
           const earlyReturn = this.checkBalance(element, i);
           if (!earlyReturn) return;
@@ -248,25 +247,8 @@ export default class SplitText {
         const lineParent = this.findLineParent(w);
         if (!lineParent.__idx) lineParent.__idx = `l${w.__top}`;
 
-        // Check if the element is a char and get its word parent
-        const isChar = this.options.handleCJK;
-        const wordParent = isChar ? w.parentElement : null;
-        const elementToCheck = wordParent || w;
-
-        // Skip first char BR if word parent already has one
-        const skipFirstCharBr = isChar && !w.previousElementSibling && this.isPrevBr(wordParent);
-
-        if (
-          !this.isPrevBr(elementToCheck.parentElement) &&
-          (isChar ? !skipFirstCharBr : !this.isPrevBr(elementToCheck)) &&
-          !this.isNextBr(prevEl) &&
-          (!prevLineParent || prevLineParent?.__idx === lineParent.__idx)
-        ) {
-          if (isChar) {
-            w.insertAdjacentHTML('beforebegin', '<br>');
-          } else {
-            elementToCheck.insertAdjacentHTML('beforebegin', '<br>');
-          }
+        if (!this.isPrevBr(w.parentElement) && !this.isPrevBr(w) && !this.isNextBr(prevEl) && (!prevLineParent || prevLineParent?.__idx === lineParent.__idx)) {
+          w.insertAdjacentHTML('beforebegin', '<br>');
         }
         prevLineParent = lineParent;
         prevTop = w.__top;
@@ -284,14 +266,9 @@ export default class SplitText {
     return found;
   }
 
-  replaceWords(element, handleCJK) {
+  replaceWords(element) {
     Array.from(element.getElementsByClassName('word')).forEach((el, i) => {
-      if (handleCJK) {
-        this.words[i] = el;
-        this.words[i].innerHTML = el.textContent;
-      } else {
-        el.replaceWith(this.words[i]);
-      }
+      el.replaceWith(this.words[i]);
     });
   }
 
@@ -313,38 +290,51 @@ export default class SplitText {
       }
 
       if (this.options.handleCJK && key === 'word') {
-        // For CJK handling, we need to process the text character by character
-        let currentWord = '';
-        let isCJKMode = false;
+        // Split text into words first
+        const words = contents.split(/(\s+)/).filter(Boolean);
 
-        for (let i = 0; i < contents.length; i++) {
-          const char = contents[i];
-          const isCurrentCharCJK = this.isCJKChar(char);
+        for (let i = 0; i < words.length; i++) {
+          const word = words[i];
 
-          // Mode switch or end of string
-          if (isCurrentCharCJK !== isCJKMode || i === contents.length - 1) {
-            // Handle the last character
-            if (i === contents.length - 1) {
+          // If it's a whitespace, preserve it
+          if (/^\s+$/.test(word)) {
+            allElements.push(document.createTextNode(word));
+            continue;
+          }
+
+          // Process each character in the word
+          let currentWord = '';
+          let isCJKMode = false;
+
+          for (let j = 0; j < word.length; j++) {
+            const char = word[j];
+            const isCurrentCharCJK = this.isCJKChar(char);
+
+            // Mode switch or end of word
+            if (isCurrentCharCJK !== isCJKMode || j === word.length - 1) {
+              // Add the current character to the word
+              if (j === word.length - 1) {
+                currentWord += char;
+              }
+
+              // Create element if we have accumulated text
+              if (currentWord) {
+                const splitEl = this.createElement(parentEl, key, currentWord);
+                elements.push(splitEl);
+                allElements.push(splitEl);
+
+                // If it's CJK, split into individual characters
+                if (isCJKMode) {
+                  this.chars.push(...this.splitElement(splitEl, 'char', '', false));
+                }
+              }
+
+              // Reset for next segment
+              currentWord = j === word.length - 1 ? '' : char;
+              isCJKMode = isCurrentCharCJK;
+            } else {
               currentWord += char;
             }
-
-            // Create element if we have accumulated text
-            if (currentWord) {
-              const splitEl = this.createElement(parentEl, key, currentWord);
-              elements.push(splitEl);
-              allElements.push(splitEl);
-
-              // If it's CJK, split into individual characters
-              if (isCJKMode) {
-                this.chars.push(...this.splitElement(splitEl, 'char', '', false));
-              }
-            }
-
-            // Reset for next word
-            currentWord = i === contents.length - 1 ? '' : char;
-            isCJKMode = isCurrentCharCJK;
-          } else {
-            currentWord += char;
           }
         }
       } else {
