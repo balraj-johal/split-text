@@ -3,7 +3,7 @@
 Features:
 
 - splitting text into lines, words, and chars
-- support for CJT languages (Traditional/Simplified Chinese, Japanese, Korean, etc)
+- support for CJT languages (Traditional/Simplified Chinese, Japanese, Korean, Thai)
 - nested HTML elements (with all the types of splits)
 - text balancing
 - accessibility
@@ -25,6 +25,20 @@ import SplitText from '@activetheory/split-text';
 const el = document.querySelector('.el');
 
 const splitTextInstance = new SplitText(el);
+
+console.log(splitTextInstance.lines);
+console.log(splitTextInstance.words);
+console.log(splitTextInstance.chars);
+
+// Useful for animations purposes
+for (const line of splitTextInstance.lines) {
+  console.log(line.__words);
+  console.log(line.__wordCount);
+}
+
+for (const word of splitTextInstance.words) {
+  console.log(word.__lineIndex);
+}
 ```
 
 ## Options
@@ -61,4 +75,6 @@ To run the demo, run `npm run dev`.
 ### CJT locales
 
 The `handleCJT` option will leverage `&ZeroWidthSpace;` to split the text properly.
+This library does not handle this automatically, you need to manually add `&ZeroWidthSpace;` in your text.
+However, it's not mandatory, you can still use the library without it and most of the time it will work nicely.
 We suggest to have a look at https://github.com/google/budoux/ for more information about how to place `&ZeroWidthSpace;` in your text.
