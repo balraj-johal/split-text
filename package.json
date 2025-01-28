@@ -1,7 +1,7 @@
 {
   "name": "@activetheory/split-text",
   "version": "0.0.0",
-  "description": "GSAP-like text splitting class",
+  "description": "Split text within HTML elements into individual lines, words, and/or characters",
   "main": "./src/index.js",
   "publishConfig": {
     "access": "public"
