@@ -1,6 +1,6 @@
 {
   "name": "@activetheory/split-text",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Split text within HTML elements into individual lines, words, and/or characters",
   "main": "./src/index.js",
   "publishConfig": {
