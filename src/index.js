@@ -23,7 +23,6 @@ export default class SplitText {
   words = [];
   lines = [];
   originals = [];
-  ariaLabel = [];
   lineParents = [];
   elements = [];
   options = {};
@@ -99,23 +98,34 @@ export default class SplitText {
       }
 
       if (!this.options.noAriaLabel) {
-        const span = document.createElement('span');
-        span.classList.add('sr-only');
-        span.style.setProperty('position', 'absolute');
-        span.style.setProperty('width', '1px');
-        span.style.setProperty('height', '1px');
-        span.style.setProperty('padding', '0');
-        span.style.setProperty('margin', '-1px');
-        span.style.setProperty('overflow', 'hidden');
-        span.style.setProperty('clip', 'rect(0, 0, 0, 0)');
-        span.style.setProperty('white-space', 'nowrap');
-        span.style.setProperty('border', '0');
-        span.textContent = this.ariaLabel.join(' ');
-        element.appendChild(span);
+        const blockTags = toArray(element.childNodes).filter((child) => BLOCK_TAGS.includes(child.tagName));
+        if (blockTags.length) {
+          blockTags.forEach((child) => {
+            this.createAriaLabel(child);
+          });
+        } else {
+          element.appendChild(this.createAriaLabel(element));
+        }
       }
     });
 
     this.isSplit = true;
+  }
+
+  createAriaLabel(element) {
+    const span = document.createElement('span');
+    span.classList.add('sr-only');
+    span.style.setProperty('position', 'absolute');
+    span.style.setProperty('width', '1px');
+    span.style.setProperty('height', '1px');
+    span.style.setProperty('padding', '0');
+    span.style.setProperty('margin', '-1px');
+    span.style.setProperty('overflow', 'hidden');
+    span.style.setProperty('clip', 'rect(0, 0, 0, 0)');
+    span.style.setProperty('white-space', 'nowrap');
+    span.style.setProperty('border', '0');
+    span.textContent = element.textContent;
+    element.appendChild(span);
   }
 
   /**
@@ -146,7 +156,7 @@ export default class SplitText {
   revert() {
     if (this.originals.length === 0) return;
     this.elements.forEach((el, i) => (el.innerHTML = this.originals[i]));
-    [this.lines, this.words, this.chars, this.ariaLabel, this.originals].forEach((arr) => (arr.length = 0));
+    [this.lines, this.words, this.chars, this.originals].forEach((arr) => (arr.length = 0));
     this.isSplit = false;
   }
 
@@ -481,8 +491,8 @@ export default class SplitText {
           next.remove();
         } else {
           lp.__lines[lineIndex].appendChild(next);
-          toArray(next.childNodes).forEach((e) => (e.__line = globalLineIndex));
-          next.__line = globalLineIndex;
+          toArray(next.childNodes).forEach((e) => (e.__lineIndex = globalLineIndex));
+          next.__lineIndex = globalLineIndex;
         }
       });
       lp.__lines.forEach((line) => lp.appendChild(line));
@@ -511,7 +521,6 @@ export default class SplitText {
     el.className = key;
     el.textContent = text;
     el.setAttribute('aria-hidden', true);
-    if (key === 'word') this.ariaLabel.push(text);
     return parent.appendChild(el);
   }
 
