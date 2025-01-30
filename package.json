@@ -71,6 +71,6 @@
     ]
   },
   "dependencies": {
-    "@activetheory/balance-text": "^1.0.1"
+    "@activetheory/balance-text": "^1.0.2"
   }
 }
