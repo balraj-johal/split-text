@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const noBalance = document.getElementById('input-no-balance');
   const handleCJT = document.getElementById('input-handle-cjt');
   const cssBalance = document.getElementById('input-balance');
+  const balanceRatio = document.getElementById('input-balance-ratio');
+  const minLines = document.getElementById('input-min-lines');
+  const lineThreshold = document.getElementById('input-line-threshold');
+
   // Get font size input
   const fontSize = document.getElementById('input-font-size');
 
@@ -33,6 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
       noAriaLabel: noAriaLabel.checked,
       noBalance: noBalance.checked,
       handleCJT: handleCJT.checked,
+      balanceRatio: Number(balanceRatio.value),
+      minLines: Number(minLines.value),
+      lineThreshold: Number(lineThreshold.value),
     };
   };
 
@@ -67,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners
   inputText.addEventListener('input', updateSplit);
   fontSize.addEventListener('input', updateFontSize);
-  [typeLines, typeWords, typeChars, noAriaLabel, noBalance, handleCJT, cssBalance].forEach((checkbox) => {
+  [typeLines, typeWords, typeChars, noAriaLabel, noBalance, handleCJT, cssBalance, balanceRatio, minLines, lineThreshold].forEach((checkbox) => {
     checkbox.addEventListener('change', updateSplit);
   });
 
@@ -86,15 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initial text
-  inputText.value = [
-    /*html*/ `<h1>split anything 🐳 🍔 🍕 into words, chars, lines</h1>`,
-    /*html*/ `<p>Try typing some text <a href="https://www.google.com">here</a> to see it split into lines, words, and characters!</p>`,
-    /*html*/ `<ul>`,
-    /*html*/ `  <li>pizza <b>margherita</b></li>`,
-    /*html*/ `  <li>hamburger</li>`,
-    /*html*/ `  <li>taco</li>`,
-    /*html*/ `</ul>`,
-  ].join('\n');
+  inputText.value = /* html */ `
+    <h1>split anything 🐳 🍔 🍕 into words, chars, lines</h1>
+    <p>Try typing some text to see it split into lines, words, and characters!</p>
+    <p> Link <a href="https://www.google.com">here</a></p>
+    <ul>
+      <li>pizza <b>margherita</b></li>
+      <li>hamburger</li>
+      <li>taco</li>
+    </ul>
+  `.trim();
 
   updateSplit();
 });

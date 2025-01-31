@@ -6,7 +6,6 @@ function toArray(e, parent) {
 
 const NBSP = String.fromCharCode(160);
 const NNBSP = String.fromCharCode(8239);
-const NBSPACES = [NBSP, NNBSP];
 const SPACES = [' ', NBSP, NNBSP];
 const BLOCK_TAGS = ['DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'UL', 'OL', 'LI'];
 
@@ -60,6 +59,8 @@ export default class SplitText {
     const byChars = ~by.indexOf('chars');
 
     this.elements.forEach((element, i) => {
+      element.__isParent = true;
+
       this.originals[i] = element.innerHTML.trim();
 
       // replace all zero width space with <wbr>
@@ -98,18 +99,30 @@ export default class SplitText {
       }
 
       if (!this.options.noAriaLabel) {
-        const blockTags = toArray(element.childNodes).filter((child) => BLOCK_TAGS.includes(child.tagName));
-        if (blockTags.length) {
-          blockTags.forEach((child) => {
-            this.createAriaLabel(child);
-          });
-        } else {
-          element.appendChild(this.createAriaLabel(element));
-        }
+        this.recursiveAriaLabel(element);
+
+        // Handle A tags
+        const aTags = toArray(element.getElementsByTagName('A'));
+        aTags.forEach((aTag) => {
+          if (!aTag.getAttribute('aria-label')) {
+            aTag.setAttribute('aria-label', aTag.textContent);
+          }
+        });
       }
     });
 
     this.isSplit = true;
+  }
+
+  recursiveAriaLabel(element) {
+    const blockTags = toArray(element.childNodes).filter((child) => BLOCK_TAGS.includes(child.tagName));
+    if (blockTags.length) {
+      blockTags.forEach((child) => {
+        this.recursiveAriaLabel(child);
+      });
+    } else {
+      this.createAriaLabel(element);
+    }
   }
 
   createAriaLabel(element) {
@@ -160,11 +173,20 @@ export default class SplitText {
     this.isSplit = false;
   }
 
-  recursiveBalance(e, lineParents) {
+  recursiveBalance(e) {
     e.normalize();
     toArray(e.childNodes).forEach((next) => {
       next.normalize();
-      next.__lineParent = next.tagName && next.hasChildNodes() && BLOCK_TAGS.includes(next.tagName);
+      next.__lineParent = Boolean(next.tagName && next.hasChildNodes() && BLOCK_TAGS.includes(next.tagName));
+      if (next.__lineParent && e?.__lineParent && !e.__isParent) {
+        e.__lineParent = false;
+      }
+      this.recursiveBalance(next);
+    });
+  }
+
+  recursiveCheckLineParent(e, lineParents) {
+    toArray(e.childNodes).forEach((next) => {
       if (next.__lineParent) {
         next.__idx = null;
         // check if the __lineParent element has a valid text node to split
@@ -173,7 +195,7 @@ export default class SplitText {
           lineParents.push(next);
         }
       }
-      this.recursiveBalance(next, lineParents);
+      this.recursiveCheckLineParent(next, lineParents);
     });
   }
 
@@ -181,7 +203,9 @@ export default class SplitText {
     // save all line parents
     this.lineParents = [];
 
-    this.recursiveBalance(el, this.lineParents);
+    this.recursiveBalance(el);
+
+    this.recursiveCheckLineParent(el, this.lineParents);
 
     let useParent = true;
     if (!this.lineParents.length) {
@@ -300,13 +324,20 @@ export default class SplitText {
   }
 
   handleRawElement(parentEl, el, key, splitOn, preserveWhitespace, elements, allElements) {
-    // Get the text to split, trimming out the whitespace
+    // Get the text to split
     const wholeText = el.wholeText || '';
-    let contents = wholeText.trim();
+    let contents = wholeText;
 
-    // If there's no text left after trimming whitespace, continue the loop
-    if (contents.length) {
-      // insert leading space if there was one and preserve &nbsp;
+    // If there's no text after removing all whitespace, preserve the original whitespace
+    if (!contents.trim().length) {
+      allElements.push(document.createTextNode(wholeText));
+      return;
+    }
+
+    // If we're splitting into words/chars, trim the content but preserve spaces
+    if (key === 'word' || key === 'char') {
+      contents = wholeText.trim();
+      // Preserve leading whitespace
       if (SPACES.includes(wholeText[0])) {
         allElements.push(document.createTextNode(wholeText[0]));
       }
@@ -371,31 +402,19 @@ export default class SplitText {
             allElements.push(splitEl);
           });
         } else {
-          const words = contents.split(splitOn);
-          let i = 0,
-            splitText;
-
-          const recursiveSupportNBSpaces = () => {
-            if (key === 'char') return;
-            let matched = false;
-            const charAt = contents.charAt(contents.indexOf(splitText) + splitText.length);
-            const space = NBSPACES.find((s) => s === charAt);
-            if (space) {
-              splitText = splitText.concat(space).concat(words[++i]);
-              matched = true;
+          // Split content preserving all whitespace
+          const parts = contents.split(/([\s\u00A0\u202F]+)/);
+          parts.forEach((part, i) => {
+            if (i % 2 === 1) {
+              // Odd indices are whitespace - preserve them exactly
+              allElements.push(document.createTextNode(part));
+            } else if (part) {
+              // Even indices are words - process them
+              const splitEl = this.createElement(parentEl, key, part);
+              elements.push(splitEl);
+              allElements.push(splitEl);
             }
-            contents = contents.substring(contents.indexOf(splitText));
-            if (matched) return recursiveSupportNBSpaces();
-          };
-
-          for (; i < words.length; i++) {
-            splitText = words[i];
-            if (i && preserveWhitespace) allElements.push(document.createTextNode(' '));
-            recursiveSupportNBSpaces();
-            const splitEl = this.createElement(parentEl, key, splitText);
-            elements.push(splitEl);
-            allElements.push(splitEl);
-          }
+          });
         }
       }
 
@@ -482,8 +501,9 @@ export default class SplitText {
     });
 
     let globalLineIndex = 0;
-    this.lineParents.forEach((lp) => {
+    this.lineParents.forEach((lp, i) => {
       let lineIndex = 0;
+      if (i > 0) globalLineIndex++;
       toArray(lp.childNodes).forEach((next) => {
         if (next.tagName === 'BR') {
           globalLineIndex++;
@@ -511,7 +531,7 @@ export default class SplitText {
     const line = document.createElement('span');
     line.style.setProperty('display', 'block');
     line.className = 'line';
-    line.setAttribute('aria-hidden', true);
+    // line.setAttribute('aria-hidden', true);
     return parent ? parent.appendChild(line) : line;
   }
 
