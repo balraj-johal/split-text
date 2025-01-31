@@ -3,3 +3,12 @@ demo
 .vscode
 .github
 eslint.config.js
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Tests
+tests
