@@ -93,8 +93,29 @@ export default class SplitText {
           this.safeCheckBalance = 0;
         }
 
+        if (byLines && !byWords && !byChars) {
+          this.lines.forEach((l) => {
+            l.__words.forEach((w) => {
+              w.insertAdjacentHTML('beforebegin', w.textContent);
+              w.remove();
+            });
+            l.normalize();
+          });
+          this.words.length = 0;
+          this.chars.length = 0;
+        }
+
         if (byChars) {
-          this.words.forEach((w) => this.chars.push(...this.splitElement(w, 'char', '', false)));
+          this.words.forEach((e) => this.chars.push(...this.splitElement(e, 'char', '', false)));
+          if (!byWords) {
+            this.chars.forEach((e) => {
+              e.parentElement.insertAdjacentHTML('beforebegin', e.outerHTML);
+              e.remove();
+            });
+            this.chars = toArray(element.getElementsByClassName('char'));
+            this.words.forEach((e) => e.remove());
+            this.words.length = 0;
+          }
         }
       }
 
@@ -520,7 +541,7 @@ export default class SplitText {
     });
 
     lines.forEach((line) => {
-      line.__words = line.getElementsByClassName('word');
+      line.__words = toArray(line.getElementsByClassName('word'));
       line.__wordCount = line.__words.length;
     });
 
