@@ -19,7 +19,9 @@
     "format": "prettier --write --ignore-unknown",
     "eslint": "eslint --fix src",
     "release": "release-it",
-    "prepare": "husky"
+    "prepare": "husky",
+    "playwright:test": "playwright test",
+    "test": "concurrently -c red,blue -n \"dev,test\" --pad-prefix \"npm run dev\" \"npm run playwright:test\""
   },
   "sideEffects": false,
   "type": "module",
@@ -47,7 +49,11 @@
     "useTabs": false
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@eslint/js": "^9.18.0",
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^22.12.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.18.0",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
