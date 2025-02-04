@@ -32,6 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeWords.checked) types.push('words');
     if (typeChars.checked) types.push('chars');
 
+    if (cssBalance.checked) {
+      noBalance.setAttribute('disabled', 'disabled');
+      balanceRatio.setAttribute('disabled', 'disabled');
+    } else {
+      noBalance.removeAttribute('disabled');
+      balanceRatio.removeAttribute('disabled');
+    }
+
     return {
       type: types.join(','),
       noAriaLabel: noAriaLabel.checked,
