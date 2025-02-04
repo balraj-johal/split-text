@@ -119,16 +119,12 @@ export default class SplitText {
         }
       }
 
-      if (!this.options.noAriaLabel) {
+      if (!this.options.noAriaLabel && (byChars || byWords)) {
         this.recursiveAriaLabel(element);
 
         // Handle A tags
-        const aTags = toArray(element.getElementsByTagName('A'));
-        aTags.forEach((aTag) => {
-          if (!aTag.getAttribute('aria-label')) {
-            aTag.setAttribute('aria-label', aTag.textContent);
-          }
-        });
+        const focusableTags = toArray(element.querySelectorAll('a, button'));
+        focusableTags.forEach(this.createAriaLabel);
       }
     });
 
@@ -552,7 +548,6 @@ export default class SplitText {
     const line = document.createElement('span');
     line.style.setProperty('display', 'block');
     line.className = 'line';
-    // line.setAttribute('aria-hidden', true);
     return parent ? parent.appendChild(line) : line;
   }
 
