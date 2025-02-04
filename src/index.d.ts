@@ -1,5 +1,7 @@
+type CommaSepValues<T> = T | `${T},${T}` | `${T},${T},${T}`;
+
 export type SplitTextOptions = {
-  type?: 'lines' | 'words' | 'chars';
+  type?: CommaSepValues<'lines' | 'words' | 'chars'>;
   minLines?: number;
   lineThreshold?: number;
   noAriaLabel?: boolean;
