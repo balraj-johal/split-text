@@ -553,7 +553,7 @@ export default class SplitText {
 
   createElement(parent, key, text) {
     const el = document.createElement('span');
-    if (key === 'word') el.style.setProperty('display', 'inline-block');
+    el.style.setProperty('display', 'inline-block');
     el.className = key;
     el.textContent = text;
     el.setAttribute('aria-hidden', true);
